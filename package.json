@@ -1,15 +1,11 @@
 {
-  "name": "ollama-rag-chat",
+	"name": "ollama-rag-chat",
 	"version": "1.0.0",
 	"description": "This is a simple cli chat app for ollama with single pdf rag file support",
 	"main": "index.js",
-  "license": "MIT",
+	"license": "MIT",
 	"scripts": {
 		"start": "node --env-file=.env index.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/Aranyalma2/llama-rag.git"
 	},
   "type": "module",
   "dependencies": {
