@@ -1,22 +1,22 @@
 import {VectorDBQAChain} from "langchain/chains";
-import {Document} from "langchain/document";
 import {ChatOllama, OllamaEmbeddings} from "@langchain/ollama";
 import {MemoryVectorStore} from "langchain/vectorstores/memory";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 export class MemoryService {
     constructor() {
         // specify LLM model
         this.llmModel = new ChatOllama({
-            model: "llama3",
+            model: process.env.OLLAMA.MODEL,
             temperature: 0,
             maxRetries: 2,
-            // other params...
+            baseUrl: process.env.OLLAMA,
         });
 
         // specify embeddings model
         this.embeddingsModel = new OllamaEmbeddings({
-            model: "nomic-embed-text",
-            baseUrl: "http://localhost:11434",
+            model: process.env.OLLAMA.MODEL,
+            baseUrl: process.env.OLLAMA,
         });
 
         // create vector store by combining OpenSearch store with the embeddings model
@@ -29,15 +29,17 @@ export class MemoryService {
         });
     }
 
-    async storeMemory(memory) {
+    async storeMemory(data) {
         // Package a memory in a document
-        const doc = new Document({
-            pageContent: memory,
+        const splitter = new RecursiveCharacterTextSplitter({
+            chunkSize:500,
+            separators: ['\n\n','\n',' ',''],
+            chunkOverlap: 20
         });
 
-        await this.vectorStore.addDocuments([doc]);
+        const splitDocs = await splitter.splitDocuments(data);
 
-        console.log('Document indexed successfully:', doc);
+        await this.vectorStore.addDocuments(splitDocs);
     }
 
     async getRelevantMemory(query) {
