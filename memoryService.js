@@ -7,7 +7,7 @@ export class MemoryService {
     constructor() {
         // specify LLM model
         this.llmModel = new ChatOllama({
-            model: process.env.OLLAMA.MODEL,
+            model: process.env.MODEL,
             temperature: 0,
             maxRetries: 2,
             baseUrl: process.env.OLLAMA,
@@ -15,7 +15,7 @@ export class MemoryService {
 
         // specify embeddings model
         this.embeddingsModel = new OllamaEmbeddings({
-            model: process.env.OLLAMA.MODEL,
+            model: process.env.MODEL,
             baseUrl: process.env.OLLAMA,
         });
 
@@ -38,6 +38,8 @@ export class MemoryService {
         });
 
         const splitDocs = await splitter.splitDocuments(data);
+
+        console.log('Adding documents to vector store...');
 
         await this.vectorStore.addDocuments(splitDocs);
     }
